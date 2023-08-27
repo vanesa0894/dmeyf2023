@@ -24,8 +24,9 @@ $ git config --global user.name "Nuestro Nombre"
 $ git config --global user.email nuestro@mail.com
 ```
 
-Para trabajar en GitHub o GitLab además es necesario configurar llaves SSH. Se
-verá luego, sin temores por ahora.
+Para trabajar en GitHub o GitLab además es necesario configurar llaves SSH.
+Sigan [éstos pasos](https://docs.github.com/es/authentication/managing-commit-signature-verification/generating-a-new-gpg-key)
+y que no panda el cúnico.
 
 ### Inicializar nuestro editor
 
