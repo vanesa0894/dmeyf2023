@@ -16,9 +16,10 @@ require("ggplot2")
 
 
 # Poner la carpeta de la materia de SU computadora local
-setwd("/home/aleb/dmeyf23/")
+setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF")
+
 # Poner sus semillas
-semillas <- c(17, 19, 23, 29, 31)
+semillas <- c(880001, 880007, 880021, 880027, 880031)
 
 # Cargamos el dataset
 dataset <- fread("./datasets/competencia_01.csv")
@@ -37,10 +38,11 @@ print(arbol)
 
 ## Preguntas
 ## Usualmente se suele cortar las variables en 2 intervalos
-## - ¿Se podría cortar en más intervalos?
-## - ¿Cuál sería el costo?
-## - ¿Se obtendrían mejores resultados?
-##
+## - ¿Se podría cortar en más intervalos? Tantos como valores únicos tengan las variables
+## - ¿Cuál sería el costo? Aumento de complejidad del árbol
+## - ¿Se obtendrían mejores resultados? Podría mejorar el rendimiento con los datos de entrenamiento, pero podríamos
+## tener un modelo que no generalice bien, presente overfitting...
+
 ## Una de las muchas ventajas que tienen los árboles es la simpleza que tienen
 ## para ser implementados en fácilmente en sistemas productivos, dado que la
 ## reescritura de las reglas de salida es muy simple.
@@ -92,7 +94,9 @@ print(hojas[,])
 ## Preguntas
 ## - ¿Con qué criterio eligió la clase de cada hoja que determino la
 ##   clasificación de los registros?
+## La clasificación se determina tomando la clase mayoritaria, la clase cuya proporción del total sea la mayor
 ## - ¿Cuántas hojas con BAJAS+2 hay?
+## Hay dos hojas con BAJAS+2, la 15 y 27
 
 ## ---------------------------
 ## Step 3: Calculando la ganancia de cada hoja
@@ -104,21 +108,21 @@ print(hojas)
 
 ## Pregunta
 ## - ¿Cuantás hojas que no son BAJA+2 tienen aún así ganancia positiva?
+## 5 hojas, donde la proporción de BAJA+1 no es tan pequeña
 
 ## ---------------------------
 ## Step 4: Sumarizando el envío
 ## ---------------------------
-
-print(hojas[ganancia > 0, .(
-    ganancia = sum(ganancia),
-    enviados = sum(TOTAL),
-    sevan = sum(`BAJA+2`))])
 
 ## Preguntas
 ## Si enviaramos todos los casos de las hojas con ganancia positiva
 ## - ¿Cuánta ganancia tendríamos?
 ## - ¿Cuánta personas estimularíamos?
 ## - ¿A cuántas personas acertaríamos?
+print(hojas[ganancia > 0, .(
+  ganancia = sum(ganancia),
+  enviados = sum(TOTAL),
+  sevan = sum(`BAJA+2`))])
 
 
 ## ---------------------------
@@ -141,6 +145,7 @@ arbolbinario <- rpart("clase_binaria ~ .",
                  minsplit =  0,
                  minbucket = 5,
                  maxdepth =  4)
+
 # Transformamos las hojas a una tabla
 hojasbinario <- tablahojas(arbolbinario, dtrain, "clase_binaria")
 

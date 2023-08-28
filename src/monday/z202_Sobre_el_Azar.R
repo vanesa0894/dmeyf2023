@@ -23,15 +23,16 @@ require("ggplot2")
 
 
 # Poner la carpeta de la materia de SU computadora local
-setwd("/home/aleb/dmeyf23")
+setwd(setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF"))
 # Poner sus semillas
-semillas <- c(17, 19, 23, 29, 31)
+semillas <- c(880001, 880007, 880021, 880027, 880031)
 
 # Cargamos el dataset
 dataset <- fread("./datasets/competencia_01.csv")
 
-# Nos quedamos solo con el 202101
+# Nos quedamos solo con el 202103
 dataset <- dataset[foto_mes == 202103]
+
 # Creamos una clase binaria
 dataset[, clase_binaria := ifelse(
                             clase_ternaria == "BAJA+2",
@@ -95,6 +96,7 @@ print(ganancia(pred_testing[, "evento"], dtest$clase_binaria) / 0.3)
 ## Actividad:
 ## Comparta el número que le dio de ganancia y cuanto error estima que
 ## puede haber con el resto de sus compañeros
+## 58800000
 
 ## ---------------------------
 ## Step 4: Probando más muchas más semillas
@@ -105,7 +107,7 @@ resultados_n_gan <- c()
 
 # Calcule en función del tiempo de ejecución anterior, cuantos árboles puede
 # hacer en 5 minutos y ponga ese número en la siguiente variable
-n <- 100
+n <- 71
 
 set.seed(semillas[1])
 t0 <- Sys.time()
@@ -290,6 +292,8 @@ for (mb in c(1, as.integer(ms / 2))) {
 
 # Visualizo los parámetros de los mejores parámetros
 print(resultados_grid_search[gan == max(gan), ])
+resultados_grid_search_ordenado <- resultados_grid_search[order(-gan),]
+write.csv(resultados_grid_search_ordenado, file = "C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF/resultados_grid_search.csv", row.names = FALSE)
 
 ## TAREA:
 ## Una vez que tenga sus mejores parámetros, haga una copia del script
