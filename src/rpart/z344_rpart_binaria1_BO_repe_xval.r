@@ -21,14 +21,14 @@ require("mlrMBO")
 # Defino la  Optimizacion Bayesiana
 PARAM <- list()
 
-PARAM$home <- "~/buckets/b1/"
+PARAM$home <- "C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF"
 
 PARAM$experimento <- "HT3440"
 
 # Aqui van las 10 semillas que hacen el 10-repeated
 #  si se pone una sola semilla, se esta haciendo solo 5-fold xval
 PARAM$semilla_azar <- c(
-  102191, 200177, 410551, 552581, 892237,
+  880001, 880007, 880021, 880027, 880031,
   753587, 247759, 253369, 955127, 800519
 )
 
@@ -40,7 +40,7 @@ PARAM$BO_iter <- 300
 
 # la letra L al final de 1L significa ENTERO
 PARAM$hs <- makeParamSet(
-  makeNumericParam("cp", lower = -1, upper = 0.1),
+  #makeNumericParam("cp", lower = -1, upper = 0.1),
   makeIntegerParam("minsplit", lower = 1L, upper = 8000L),
   makeIntegerParam("minbucket", lower = 1L, upper = 4000L),
   makeIntegerParam("maxdepth", lower = 3L, upper = 20L),
@@ -50,7 +50,7 @@ PARAM$hs <- makeParamSet(
 
 
 # este valor debe ser 1 si se utiliza Windows
-PARAM$cores <- 5
+PARAM$cores <- 1
 
 #------------------------------------------------------------------------------
 # graba a un archivo los componentes de lista
@@ -65,7 +65,7 @@ loguear <- function(reg, arch = NA, folder = "./work/", ext = ".txt",
   if (!file.exists(archivo)) {
     linea <- paste0(
       "fecha\t",
-      paste(list.names(reg), collapse = "\t"), "\n"
+      paste(names(reg), collapse = "\t"), "\n"
     )
 
     cat(linea, file = archivo)
@@ -117,6 +117,7 @@ ArbolSimple <- function(fold_test, data, param) {
   modelo <- rpart("clase_virtual ~ . - clase_ternaria",
     data = data[fold != fold_test, ],
     xval = 0,
+    cp = -1,
     control = param
   )
 

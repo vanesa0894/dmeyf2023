@@ -37,7 +37,7 @@ PARAM$hs <- makeParamSet(
 )
 # minbuket NO PUEDE ser mayor que la mitad de minsplit
 
-PARAM$semilla_azar <- 270001 # primer semilla de Federico
+PARAM$semilla_azar <- 880001 # primer semilla de Vanesa 
 
 #------------------------------------------------------------------------------
 
@@ -172,16 +172,18 @@ EstimarGanancia <- function(x) {
 # Aqui empieza el programa
 
 # Establezco el Working Directory
-setwd("~/buckets/b1/")
+setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF")
 
 # cargo los datos
 dataset <- fread("./datasets/competencia_01.csv")
 
 # defino la clase_binaria2
-dataset[ , clase_binaria := ifelse( clase_ternaria=="CONTINUA", "NEG", "POS" ) ]
+dataset[, clase_binaria := ifelse(clase_ternaria == "CONTINUA", "NEG", "POS")]
 
 dtrain <- dataset[foto_mes==202103]
 dapply <- dataset[foto_mes==202105]
+dapply[ , clase_ternaria := NA ]
+print(unique(dapply$clase_ternaria))
 
 # creo la carpeta donde va el experimento
 #  HT  representa  Hiperparameter Tuning
@@ -254,3 +256,4 @@ if (!file.exists(archivo_BO)) {
   run <- mboContinue(archivo_BO)
 }
 # retomo en caso que ya exista
+
