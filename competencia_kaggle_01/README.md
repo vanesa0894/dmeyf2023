@@ -22,5 +22,11 @@
     
     Utilicé mi semilla 880001.
 
+    Se agregra archivo BO_log.txt.
+
+6. Entrega KA4000-01:
+   
+   Optimización bayesiana + oversampling
+
 
 
