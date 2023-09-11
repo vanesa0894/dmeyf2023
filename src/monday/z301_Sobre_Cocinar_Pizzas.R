@@ -24,15 +24,16 @@ require("DiceKriging")
 require("mlrMBO")
 
 # Poner la carpeta de la materia de SU computadora local
-setwd("/home/aleb/dmeyf23")
+setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF")
 # Poner sus semillas
-semillas <- c(17, 19, 23, 29, 31)
+semillas <- c(880001, 880007, 880021, 880027, 880031)
 
 # Cargamos el dataset
 dataset <- fread("./datasets/competencia_01.csv")
 
-# Nos quedamos solo con el 202101
+# Nos quedamos solo con el 202103
 dataset <- dataset[foto_mes == 202103]
+
 # Creamos una clase binaria
 dataset[, clase_binaria := ifelse(
                             clase_ternaria == "BAJA+2",
@@ -118,13 +119,16 @@ print(seconds_to_period(n_md * n_ms * n_seeds * model_time * n_mb))
 ## ---------------------------
 
 set.seed(semillas[1])
-dist_uni <- matrix(runif(20), 10, 2)
+dist_uni <- matrix(runif(20), 10, 2) 
+# La función runif(20) genera 20 números aleatorios entre 0 y 1, que luego se organizan en una matriz de 10 filas y 2 columnas.
 
 # LHS Latin hypercube sampling
 set.seed(semillas[1])
 dist_lhs <- optimumLHS(10, 2)
-
+# El muestreo LHS es una técnica para generar muestras estratificadas en un espacio de diseño multidimensional de manera que
+# las muestras sean representativas y cubran el espacio de manera uniforme
 par(mfrow = c(1, 2))
+# se crea una ventana con dos parcelas en una fila y dos columnas
 plot(dist_uni)
 plot(dist_lhs)
 
@@ -155,7 +159,8 @@ modelo_rpart <- function(train, test, cp =  0, ms = 20, mb = 1, md = 10) {
     unlist(auc_t@y.values)
 }
 
-# Función para tomar un muestra dejando todos los elementos de la clase BAJA+2
+# Función para tomar un muestra dejando todos los elementos de la clase BAJA+2 (la muestra que toma o reduce es la que no tiene
+# la clase BAJA+2 en este caso minoritaria)
 tomar_muestra <- function(datos, resto = 10000) {
       t <- datos$clase_binaria == "evento"
       r <- rep(FALSE, length(datos$clase_binaria))
