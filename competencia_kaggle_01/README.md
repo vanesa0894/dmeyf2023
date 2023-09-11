@@ -14,7 +14,7 @@
 
 4. Entregas Z399_001 a la Z399_040:
     
-    Optimización de hiperparámetros con BO + maximizar la ganancia pública.
+    Optimización de hiperparámetros con BO + maximizar la ganancia leaderboard público.
 
     De acá se selecciona el modelo que mayor ganancia arrojó Z399_039.
 
