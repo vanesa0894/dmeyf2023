@@ -5,7 +5,6 @@
 require("data.table")
 require("rpart")
 require("rpart.plot")
-library(ggplot2)
 
 # Aqui se debe poner la carpeta de la materia de SU computadora local
 setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF") # Establezco el Working Directory
@@ -80,8 +79,8 @@ for (i in seq_along(umbrales)) {
 # Valores obtenidos
 
 # umbrales_probados <- c(0.05,0.04,0.045,0.03,0.035,0.025,0.02,0.015,0.01,0.005)
-positivos <- c(4876,5826,5826,6220,6220,7475,10366,15917,20149)
-ganancia_public <- c(51566250,52616240,52616240,50866260,50866260,48906270,45266300,38383030,25783130)
+positivos <- c(4876,5826,5826,6220,6220,7475,10366,15917,20149,35544)
+ganancia_public <- c(51566250,52616240,52616240,50866260,50866260,48906270,45266300,38383030,25783130,-39059660)
 
 
 resultados <- data.frame(positivos = positivos, ganancia_public = ganancia_public)
@@ -92,20 +91,3 @@ ggplot(data = resultados, aes(x = positivos, y = ganancia_public)) +
   labs(x = "Positivos", y = "Ganancia Public") +
   theme_minimal()
 
-# agrego a dapply una columna nueva que es la probabilidad de BAJA+2
-# dapply[, prob_baja2 := prediccion[, "BAJA+2"]]
-
-# solo le envio estimulo a los registros
-#  con probabilidad de BAJA+2 mayor  a  1/40
-# dapply[, Predicted := as.numeric(prob_baja2 > 1 / 40)]
-
-# genero el archivo para Kaggle
-# primero creo la carpeta donde va el experimento
-# dir.create("./exp/")
-# dir.create("./exp/KA2001")
-
-# solo los campos para Kaggle
-#fwrite(dapply[, list(numero_de_cliente, Predicted)],
-#        file = "./exp/KA2001/K101_007.csv",
-#       sep = ","
-#)

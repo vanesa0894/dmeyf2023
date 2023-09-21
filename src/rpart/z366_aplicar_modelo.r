@@ -20,7 +20,7 @@ PARAM$experimento <- "KA4000-01"
 PARAM$clase <- "binaria2"
 
 # poner 0 si no se quiere que se haga oversampling
-PARAM$oversampling <- 100
+PARAM$oversampling <- 67
 
 # poner algo mayor a cero si se quiere cortar por probabilidad
 #  generalmente debe ser 0.025 , si se quiere cortar por probabilidad
@@ -28,20 +28,20 @@ PARAM$prob_corte <-  -1
 
 # poner -1 si se quiere cortar por probabilidad
 #  un numero mayor o igual a cero indica que se corta por cant envios
-PARAM$corte <- 10000
+PARAM$corte <- 8421
 
 # estos valores son simplemente de ejemplo
 PARAM$rpart$cp <- -1
-PARAM$rpart$minsplit <- 2500
-PARAM$rpart$minbucket <- 250
-PARAM$rpart$maxdepth <- 6
+PARAM$rpart$minsplit <- 4027
+PARAM$rpart$minbucket <- 33
+PARAM$rpart$maxdepth <- 20
 
 #------------------------------------------------------------------------------
 #Aqui comienza el programa
 
 
 # Aqui se debe poner la carpeta de la materia de SU computadora local
-setwd("~/buckets/b1/") # Establezco el Working Directory
+setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF") # Establezco el Working Directory
 
 
 if( PARAM$prob_corte <= 0 & PARAM$corte <= 0 ) stop("debe elegir al menos una opcion de corte" )
@@ -121,3 +121,4 @@ fwrite(tablita[, list(numero_de_cliente, Predicted)],
         file = nom_archivo,
         sep = ","
 )
+
