@@ -22,13 +22,13 @@ PARAM$input$dataset <- "./datasets/competencia_02.csv.gz"
 PARAM$input$training <- c(202101, 202102, 202103, 202104, 202105)
 PARAM$input$future <- c(202107) # meses donde se aplica el modelo
 
-PARAM$finalmodel$semilla <- 102191
+PARAM$finalmodel$semilla <- 880007
 
-PARAM$finalmodel$num_iterations <- 4928
-PARAM$finalmodel$learning_rate <- 0.0189943331895954
-PARAM$finalmodel$feature_fraction <- 0.892623977897483
-PARAM$finalmodel$min_data_in_leaf <- 785
-PARAM$finalmodel$num_leaves <- 666
+PARAM$finalmodel$num_iterations <- 842
+PARAM$finalmodel$learning_rate <- 0.108805935895768
+PARAM$finalmodel$feature_fraction <- 0.910972651763925
+PARAM$finalmodel$min_data_in_leaf <- 328
+PARAM$finalmodel$num_leaves <- 410
 
 
 PARAM$finalmodel$max_bin <- 31
@@ -36,7 +36,7 @@ PARAM$finalmodel$max_bin <- 31
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # Aqui empieza el programa
-setwd("~/buckets/b1")
+setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF")
 
 # cargo el dataset donde voy a entrenar
 dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
@@ -136,7 +136,7 @@ setorder(tb_entrega, -prob)
 # suba TODOS los archivos a Kaggle
 # espera a la siguiente clase sincronica en donde el tema sera explicado
 
-cortes <- seq(8000, 13000, by = 500)
+cortes <- seq(8000, 15000, by = 500)
 for (envios in cortes) {
   tb_entrega[, Predicted := 0L]
   tb_entrega[1:envios, Predicted := 1L]
