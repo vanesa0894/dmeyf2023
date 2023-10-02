@@ -148,3 +148,4 @@ for (envios in cortes) {
 }
 
 cat("\n\nLa generacion de los archivos para Kaggle ha terminado\n")
+
