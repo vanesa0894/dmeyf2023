@@ -15,7 +15,15 @@ PARAM$experimento <- "DR5940"
 
 PARAM$dataset <- "competencia_02.csv.gz"
 
-PARAM$meses <- c(202104, 202105, 202107)
+PARAM$meses <- c(201907,201908,201910,201909,201911,201912,202107)
+# 201906,201907,201908,201909,201910,201911,201912,202107
+# 202001,202002,202003,202004,202005,202006,202107
+# 202007,202008,202009,202010,202011,202012,202107
+# 202101,202102,202103,202104,202105,202107
+
+
+# Exluyo los meses 201901,201902,201903,201904,201905 porque contiene 100% de NA en las variables tmobile_app y cmobile_app_trx
+# Genero el archivo en lotes de 7meses +1mes a predecir para observar drifting respecto al mes a predecir
 
 #------------------------------------------------------------------------------
 
@@ -29,7 +37,6 @@ graficar_campo <- function(campo) {
   ]
   xxmin <- tbl[, min(tile)]
   xxmax <- tbl[, max(tile)]
-
 
   densidad <- density(dataset[foto_mes == PARAM$meses[qty], get(campo)],
     kernel = "gaussian", na.rm = TRUE
@@ -64,7 +71,7 @@ if (length(PARAM$meses) < 2) {
   stop("deben haber al menos DOS meses en PARAM$meses\n")
 }
 
-setwd("~/buckets/b1/") # Establezco el Working Directory
+setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF") # Establezco el Working Directory
 
 # cargo el dataset donde voy a entrenar
 dataset <- fread(paste0("./datasets/", PARAM$dataset))
@@ -85,7 +92,7 @@ campos_buenos <- setdiff(
 
 
 # genero los graficos, uno por hoja
-pdf("densidades.pdf")
+pdf("densidades_201906.pdf")
 
 for (campo in campos_buenos) {
   cat(campo, "  ")
