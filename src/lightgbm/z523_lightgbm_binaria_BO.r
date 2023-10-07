@@ -37,10 +37,10 @@ PARAM <- list()
 
 PARAM$experimento <- "HT5230"
 
-PARAM$input$dataset <- "./datasets/competencia_02.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_02_fe_202012.csv.gz"
 
  # los meses en los que vamos a entrenar
-PARAM$input$training <- c(202101, 202102, 202103, 202104, 202105)
+PARAM$input$training <- c(202012, 202101, 202102, 202103, 202104, 202105)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
 PARAM$trainingstrategy$undersampling <- 0.5
