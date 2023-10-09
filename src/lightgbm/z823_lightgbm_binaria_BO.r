@@ -44,13 +44,13 @@ PARAM$input$training <- c(202012, 202101, 202102, 202103)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
 PARAM$trainingstrategy$undersampling <- 0.5
-PARAM$trainingstrategy$semilla_azar <- 880001 # Aqui poner su  primer  semilla
+PARAM$trainingstrategy$semilla_azar <- 880027 # Aqui poner su  primer  semilla
 
 PARAM$hyperparametertuning$POS_ganancia <- 273000
 PARAM$hyperparametertuning$NEG_ganancia <- -7000
 
 # Aqui poner su segunda semilla
-PARAM$lgb_semilla <- 880027
+PARAM$lgb_semilla <- 880007
 #880001,880007,880021,880027,880031
 #------------------------------------------------------------------------------
 
