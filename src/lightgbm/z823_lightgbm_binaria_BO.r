@@ -40,7 +40,7 @@ PARAM$input$dataset <- "./datasets/competencia_02_fe_201901.csv.gz"
 #  mucha magia emerger de esta eleccion
 PARAM$input$testing <- c(202105)
 PARAM$input$validation <- c(202104)
-PARAM$input$training <- c(201901,201902,201903,201904,201905,201906,201907,201908,201909,201910,201911,201912,202010,202011,202012,202101,202102,202103,202104,202105,202106,202107)
+PARAM$input$training <- c(201901,201902,201903,201904,201905,201906,201907,201908,201909,201910,201911,201912,202010,202011,202012,202101,202102,202103)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
 PARAM$trainingstrategy$undersampling <- 1.0
@@ -92,8 +92,8 @@ PARAM$lgb_basicos <- list(
 #  en la Bayesian Optimization
 PARAM$bo_lgb <- makeParamSet(
   makeNumericParam("learning_rate", lower = 0.02, upper = 0.3),
-  makeNumericParam("feature_fraction", lower = 0.1, upper = 1.0),
-  makeIntegerParam("num_leaves", lower = 8L, upper = 1024L),
+  makeNumericParam("feature_fraction", lower = 0.2, upper = 1.0),
+  makeIntegerParam("num_leaves", lower = 16L, upper = 1024L),
   makeIntegerParam("min_data_in_leaf", lower = 100L, upper = 20000L)
 )
 
