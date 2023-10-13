@@ -24,7 +24,7 @@ PARAM$input$future <- c(202107) # meses donde se aplica el modelo
 # Tomo parámetros obtenidos de BO de casi 5 días (1 mejor ganancia)
 PARAM$finalmodel$semilla <- 880007
 
-PARAM$finalmodel$num_iterations <- 842
+PARAM$finalmodel$num_iterations <- 5968
 PARAM$finalmodel$learning_rate <- 0.0167320818655866
 PARAM$finalmodel$feature_fraction <- 0.2033037718958
 PARAM$finalmodel$min_data_in_leaf <- 31
@@ -36,7 +36,7 @@ PARAM$finalmodel$max_bin <- 31
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # Aqui empieza el programa
-setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF")
+setwd("~/buckets/b1/")
 
 # cargo el dataset donde voy a entrenar
 dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
