@@ -275,8 +275,9 @@ dataset[, (paste0("avg6_", columnas_originales)) := lapply(.SD, function(x) {
 }), by = .(numero_de_cliente), .SDcols = columnas_originales]
 
 # GUARDO ARCHIVO CON FE en R
-con <- gzfile("./datasets/competencia_02_dd_fer.csv.gz", "w")
+con <- gzfile("~/buckets/b1/datasets/competencia_02_dd_fer.csv.gz", "w")
 write.csv(dataset, con, row.names = FALSE)
+close(con)
 
 # los campos que se van a utilizar
 campos_buenos <- setdiff(
