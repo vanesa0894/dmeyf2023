@@ -280,6 +280,8 @@ dataset[, (paste0("avg6_", columnas_originales)) := lapply(.SD, function(x) {
   return(ma6)
 }), by = .(numero_de_cliente), .SDcols = columnas_originales]
 
+con <- gzfile("./datasets/competencia_02_dd_fer.csv.gz", "w")
+write.csv(dataset, con, row.names = FALSE)
 
 # los campos que se van a utilizar
 campos_buenos <- setdiff(
