@@ -253,33 +253,28 @@ dataset[
   clase01 := ifelse(clase_ternaria == "CONTINUA", 0L, 1L)
 ]
 
-# En sql calculé 6 lags. Acá calculo la media móvil y una variable delta
-
 # Tomo las columnas a las que le generaré variables nuevas
 columnas_originales <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
-columnas_lags <- paste0("lag_1_",columnas_originales)  
-
+# LAGS
 for (i in 1:6){
   dataset[, paste((columnas_originales),paste0("lag_",i),sep="_") := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
           by = numero_de_cliente, .SDcols = columnas_originales]
 }
+# DELTA 1
+for (col_name in columnas_originales) {
+  delta_col_name <- paste0("delta_1_", col_name)
+  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
+}
 
-# Calcular la variable delta
-dataset[, paste0("delta_", columnas_originales ) := lapply(.SD, function(x) {
-  original_column <- .SD[[which(names(.SD) == names(x))]]  
-  delta <- original_column - x  
-  return(delta)
-}), .SDcols = columnas_lags]
-
-# Media móvil 6m
+# MEDIA MOVIL 6m
 dataset <- dataset[order(numero_de_cliente, foto_mes)]
 
-# Calcular el promedio móvil de active_quarter
 dataset[, (paste0("avg6_", columnas_originales)) := lapply(.SD, function(x) {
   ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
   return(ma6)
 }), by = .(numero_de_cliente), .SDcols = columnas_originales]
 
+# GUARDO ARCHIVO CON FE en R
 con <- gzfile("./datasets/competencia_02_dd_fer.csv.gz", "w")
 write.csv(dataset, con, row.names = FALSE)
 
