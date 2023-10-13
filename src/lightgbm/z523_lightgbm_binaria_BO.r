@@ -253,34 +253,26 @@ dataset[
   clase01 := ifelse(clase_ternaria == "CONTINUA", 0L, 1L)
 ]
 
-# En sql calculé 6 lags. Acá calculo la media móvil y una variable delta
-
 # Tomo las columnas a las que le generaré variables nuevas
-columnas_originales <- c("active_quarter","cliente_vip","internet","cliente_edad","cliente_antiguedad","cproductos","tcuentas","ccuenta_corriente","ccaja_ahorro","cdescubierto_preacordado","ctarjeta_debito","ctarjeta_debito_transacciones","ctarjeta_visa","ctarjeta_visa_transacciones","ctarjeta_master","ctarjeta_master_transacciones","cprestamos_personales","cprestamos_prendarios","cprestamos_hipotecarios","cplazo_fijo","cinversion1","cinversion2","cseguro_vida","cseguro_auto","cseguro_vivienda","cseguro_accidentes_personales","ccaja_seguridad","cpayroll_trx","cpayroll2_trx","ccuenta_debitos_automaticos","ctarjeta_visa_debitos_automaticos","mttarjeta_visa_debitos_automaticos","ctarjeta_master_debitos_automaticos","cpagodeservicios","cpagomiscuentas","ccajeros_propios_descuentos","ctarjeta_visa_descuentos","ctarjeta_master_descuentos","ccomisiones_mantenimiento","ccomisiones_otras","cforex","cforex_buy","cforex_sell","ctransferencias_recibidas","ctransferencias_emitidas","cextraccion_autoservicio","ccheques_depositados","ccheques_emitidos","ccheques_depositados_rechazados","ccheques_emitidos_rechazados","tcallcenter","ccallcenter_transacciones","thomebanking","chomebanking_transacciones","ccajas_transacciones","ccajas_consultas","ccajas_depositos","ccajas_extracciones","ccajas_otras","catm_trx","catm_trx_other","ctrx_quarter","Master_delinquency","Master_status","Master_Fvencimiento","Master_Finiciomora","Master_fultimo_cierre","Master_fechaalta","Master_cconsumos","Master_cadelantosefectivo","Visa_delinquency","Visa_status","Visa_Fvencimiento","Visa_Finiciomora","Visa_fultimo_cierre","Visa_fechaalta","Visa_cconsumos","Visa_cadelantosefectivo","mrentabilidad_rank","mrentabilidad_annual_rank","mcomisiones_rank","mactivos_margen_rank","mpasivos_margen_rank","mcuenta_corriente_adicional_rank","mcuenta_corriente_rank","mcaja_ahorro_rank","mcaja_ahorro_adicional_rank","mcaja_ahorro_dolares_rank","mcuentas_saldo_rank","mautoservicio_rank","mtarjeta_visa_consumo_rank","mtarjeta_master_consumo_rank","mprestamos_personales_rank","mprestamos_prendarios_rank","mprestamos_hipotecarios_rank","mplazo_fijo_dolares_rank","mplazo_fijo_pesos_rank","minversion1_pesos_rank","minversion1_dolares_rank","minversion2_rank","mpayroll_rank","mpayroll2_rank","mcuenta_debitos_automaticos_rank","mttarjeta_master_debitos_automaticos_rank","mpagodeservicios_rank","mpagomiscuentas_rank","mcajeros_propios_descuentos_rank","mtarjeta_visa_descuentos_rank","mtarjeta_master_descuentos_rank","mcomisiones_mantenimiento_rank","mcomisiones_otras_rank","mforex_buy_rank","mforex_sell_rank","mtransferencias_recibidas_rank","mtransferencias_emitidas_rank","mextraccion_autoservicio_rank","mcheques_depositados_rank","mcheques_emitidos_rank","mcheques_depositados_rechazados_rank","mcheques_emitidos_rechazados_rank","matm_rank","matm_other_rank","Master_mfinanciacion_limite_rank","Master_msaldototal_rank","Master_msaldopesos_rank","Master_msaldodolares_rank","Master_mconsumospesos_rank","Master_mconsumosdolares_rank","Master_mlimitecompra_rank","Master_madelantopesos_rank","Master_madelantodolares_rank","Master_mpagado_rank","Master_mpagospesos_rank","Master_mpagosdolares_rank","Master_mconsumototal_rank","Master_mpagominimo_rank","Visa_mfinanciacion_limite_rank","Visa_msaldototal_rank","Visa_msaldopesos_rank","Visa_msaldodolares_rank","Visa_mconsumospesos_rank","Visa_mconsumosdolares_rank","Visa_mlimitecompra_rank","Visa_madelantopesos_rank","Visa_madelantodolares_rank","Visa_mpagado_rank","Visa_mpagospesos_rank","Visa_mpagosdolares_rank","Visa_mconsumototal_rank","Visa_mpagominimo_rank",)  
-columnas_lags <- paste0("lag_1_",columnas_originales)  
-
+columnas_originales <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
+# LAGS
 for (i in 1:6){
   dataset[, paste((columnas_originales),paste0("lag_",i),sep="_") := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
           by = numero_de_cliente, .SDcols = columnas_originales]
 }
+# DELTA 1
+for (col_name in columnas_originales) {
+  delta_col_name <- paste0("delta_1_", col_name)
+  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
+}
 
-# Calcular la variable delta
-dataset[, paste0("delta_", columnas_originales ) := lapply(.SD, function(x) {
-  original_column <- .SD[[which(names(.SD) == names(x))]]  
-  delta <- original_column - x  
-  return(delta)
-}), .SDcols = columnas_lags]
-
-# Media móvil 6m
+# MEDIA MOVIL 6m
 dataset <- dataset[order(numero_de_cliente, foto_mes)]
 
-# Calcular el promedio móvil de active_quarter
 dataset[, (paste0("avg6_", columnas_originales)) := lapply(.SD, function(x) {
   ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
   return(ma6)
 }), by = .(numero_de_cliente), .SDcols = columnas_originales]
-
-
 # los campos que se van a utilizar
 campos_buenos <- setdiff(
   colnames(dataset),
