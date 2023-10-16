@@ -14,21 +14,21 @@ require("lightgbm")
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "KA5240_13"
+PARAM$experimento <- "KA5240_14"
 
-PARAM$input$dataset <- "./datasets/competencia_02_fe_202012.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_02_dd.csv.gz"
 
 # meses donde se entrena el modelo
-PARAM$input$training <- c(202012, 202101, 202102, 202103, 202104, 202105)
+PARAM$input$training <- c(201905,201906,201907,201908,201909,201910,201911,201912,202010,202011,202012,202101,202102,202103,202104,202105)
 PARAM$input$future <- c(202107) # meses donde se aplica el modelo
 # Tomo parámetros obtenidos de BO de casi 5 días (2 mejor ganancia)
-PARAM$finalmodel$semilla <- 880021 #880001,880007,880021,880027,880031
+PARAM$finalmodel$semilla <- 880031 #880001,880007,880021,880027,880031
 
-PARAM$finalmodel$num_iterations <- 6875
-PARAM$finalmodel$learning_rate <- 0.0133326486877864
-PARAM$finalmodel$feature_fraction <- 0.216652156817687
-PARAM$finalmodel$min_data_in_leaf <- 516
-PARAM$finalmodel$num_leaves <- 685
+PARAM$finalmodel$num_iterations <- 2
+PARAM$finalmodel$learning_rate <- 0.020099875006629
+PARAM$finalmodel$feature_fraction <- 0.306559520583207
+PARAM$finalmodel$min_data_in_leaf <- 1506
+PARAM$finalmodel$num_leaves <- 356
 
 
 PARAM$finalmodel$max_bin <- 31
@@ -50,6 +50,27 @@ dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 dataset[, clase01 := ifelse(clase_ternaria %in% c("BAJA+2", "BAJA+1"), 1L, 0L)]
 
 #--------------------------------------
+columnas_originales <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
+# LAGS
+for (i in 1:6){
+  dataset[, paste0("lag_", i, "_", columnas_originales) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
+          by = numero_de_cliente, .SDcols = columnas_originales]
+}
+
+# MEDIA MOVIL 6m
+dataset <- dataset[order(numero_de_cliente, foto_mes)]
+dataset[, (paste0("avg6_", columnas_originales)) := lapply(.SD, function(x) {
+  ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
+  return(ma6)
+}), by = .(numero_de_cliente), .SDcols = columnas_originales]
+
+# los campos que se van a utilizar
+campos_buenos <- setdiff(
+  colnames(dataset),
+  c("clase_ternaria", "clase01", "azar", "training")
+)
+
+
 
 # los campos que se van a utilizar
 campos_buenos <- setdiff(colnames(dataset), c("clase_ternaria", "clase01"))
