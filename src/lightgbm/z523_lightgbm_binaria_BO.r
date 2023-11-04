@@ -257,7 +257,7 @@ dataset[
 columnas_originales <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
 # LAGS
 for (i in 1:6){
-  dataset[, paste((columnas_originales),paste0("lag_",i),sep="_") := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
+  dataset[, paste0("lag_",i,"_",columnas_originales) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
           by = numero_de_cliente, .SDcols = columnas_originales]
 }
 # DELTA 1
