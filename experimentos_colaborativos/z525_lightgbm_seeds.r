@@ -25,7 +25,7 @@ PARAM$input$future <- c(202107)
 
 # Defino parámetros fijos obtenidos en la Optimización Bayesiana 
 # Parámetro variable
-PARAM$finalmodel$semillas <- as.list(round(seq(15000, 80000, length.out = 100)))
+semillas <- as.integer(seq(15000, 80000, length.out = 2))
 
 # Parámetros fijos
 PARAM$finalmodel$num_iterations <- 6875
@@ -38,8 +38,8 @@ PARAM$finalmodel$max_bin <- 31
 #---------------------------------CARGAR DATOS---------------------------------------------#
 # Aqui empieza el programa que voy a ejecutar para cada semilla
 # Directorio de origen
-setwd("~/buckets/b1/")
-
+#setwd("~/buckets/b1/")
+setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF")
 # Cargo el conjunto de datos
 dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 
@@ -78,7 +78,7 @@ dtrain <- lgb.Dataset(
 
 #----------------------------------ITERACIÓN----------------------------------#
 
-for (semilla in PARAM$finalmodel$semillas) {
+for (semilla in semillas) {
   #----------------------------------CONFIGURAR MODELO--------------------------------------------#
   # Utilizo los parámetros configurados al inicio para el modelo
 
@@ -92,7 +92,7 @@ for (semilla in PARAM$finalmodel$semillas) {
       num_leaves = PARAM$finalmodel$num_leaves,
       min_data_in_leaf = PARAM$finalmodel$min_data_in_leaf,
       feature_fraction = PARAM$finalmodel$feature_fraction,
-      seed = PARAM$finalmodel$semilla  # Acá OJO
+      seed = semilla 
   )
   )
 
@@ -114,7 +114,7 @@ for (semilla in PARAM$finalmodel$semillas) {
 
   # Obtengo los datos a predecir
   dapply <- dataset[foto_mes == PARAM$input$future]
-
+  cat(dapply)
   # Aplico el modelo a los nuevos datos
   prediccion <- predict(
   modelo,
@@ -122,15 +122,15 @@ for (semilla in PARAM$finalmodel$semillas) {
   )
 
   # Selecciono columna con numero de cliente y foto mes
-  predicciones_df <- dapply[, list(numero_de_cliente, foto_mes)]
-
+  predicciones <- dapply[, list(numero_de_cliente, foto_mes)]
+  cat(predicciones)
   # Agrego columna con las predicciones
   col_name <- paste0("semilla_", semilla)
-  predicciones_df[, col_name:= prediccion] 
+  predicciones[, col_name:= prediccion] 
 }
 
 #-------------------------------PERSISTO SALIDA CON LAS PREDICCIONES DE CADA SEMILLA------------------------------#
 
 # Guardo el archivo
 archivo_salida <- paste0(PARAM$experimento, "predicciones_semillas.csv")
-fwrite(predicciones_df, file = archivo_salida, sep = ",")
+fwrite(predicciones, file = archivo_salida, sep = ",")
