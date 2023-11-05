@@ -114,7 +114,7 @@ for (semilla in semillas) {
 
   # Obtengo los datos a predecir
   dapply <- dataset[foto_mes == PARAM$input$future]
-  cat(dapply)
+
   # Aplico el modelo a los nuevos datos
   prediccion <- predict(
   modelo,
