@@ -25,21 +25,21 @@ PARAM$input$future <- c(202107)
 
 # Defino parámetros fijos obtenidos en la Optimización Bayesiana 
 # Parámetro variable
-semillas <- as.integer(seq(15000, 80000, length.out = 2))
+semillas <- as.integer(seq(15000, 80000, length.out = 100))
 
 # Parámetros fijos
 PARAM$finalmodel$num_iterations <- 6875
-PARAM$finalmodel$learning_rate <- 0.0133326486877864
-PARAM$finalmodel$feature_fraction <- 0.216652156817687
-PARAM$finalmodel$min_data_in_leaf <- 516
-PARAM$finalmodel$num_leaves <- 685
+PARAM$finalmodel$learning_rate <- 0.0517170806476456
+PARAM$finalmodel$feature_fraction <- 0.758869723036321
+PARAM$finalmodel$min_data_in_leaf <- 10931
+PARAM$finalmodel$num_leaves <- 293
 PARAM$finalmodel$max_bin <- 31
 
 #---------------------------------CARGAR DATOS---------------------------------------------#
 # Aqui empieza el programa que voy a ejecutar para cada semilla
 # Directorio de origen
-#setwd("~/buckets/b1/")
-setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF")
+setwd("~/buckets/b1/")
+
 # Cargo el conjunto de datos
 dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 
@@ -123,7 +123,7 @@ for (semilla in semillas) {
 
   # Selecciono columna con numero de cliente y foto mes
   predicciones <- dapply[, list(numero_de_cliente, foto_mes)]
-  cat(predicciones)
+  
   # Agrego columna con las predicciones
   col_name <- paste0("semilla_", semilla)
   predicciones[, col_name:= prediccion] 
