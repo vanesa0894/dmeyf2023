@@ -28,7 +28,7 @@ PARAM$input$future <- c(202107)
 semillas <- as.integer(seq(15000, 80000, length.out = 100))
 
 # Parámetros fijos
-PARAM$finalmodel$num_iterations <- 6875
+PARAM$finalmodel$num_iterations <- 672
 PARAM$finalmodel$learning_rate <- 0.0517170806476456
 PARAM$finalmodel$feature_fraction <- 0.758869723036321
 PARAM$finalmodel$min_data_in_leaf <- 10931
