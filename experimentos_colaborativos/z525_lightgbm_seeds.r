@@ -126,11 +126,11 @@ for (semilla in semillas) {
   
   # Agrego columna con las predicciones
   col_name <- paste0("semilla_", semilla)
-  predicciones[, col_name:= prediccion] 
+  predicciones[, (col_name) := prediccion] 
 }
 
 #-------------------------------PERSISTO SALIDA CON LAS PREDICCIONES DE CADA SEMILLA------------------------------#
 
 # Guardo el archivo
-archivo_salida <- paste0(PARAM$experimento, "predicciones_semillas.csv")
+archivo_salida <- paste0(PARAM$experimento, "_predicciones_semillas.csv")
 fwrite(predicciones, file = archivo_salida, sep = ",")
