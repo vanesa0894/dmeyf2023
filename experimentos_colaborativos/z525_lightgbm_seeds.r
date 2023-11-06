@@ -77,6 +77,8 @@ dtrain <- lgb.Dataset(
 )
 
 #----------------------------------ITERACIÓN----------------------------------#
+# Selecciono columna con numero de cliente y foto mes en df para guardar las predicciones
+predicciones <- dapply[, list(numero_de_cliente, foto_mes)]
 
 for (semilla in semillas) {
   #----------------------------------CONFIGURAR MODELO--------------------------------------------#
@@ -120,11 +122,8 @@ for (semilla in semillas) {
   modelo,
   data.matrix(dapply[, campos_buenos, with = FALSE])
   )
-
-  # Selecciono columna con numero de cliente y foto mes
-  predicciones <- dapply[, list(numero_de_cliente, foto_mes)]
   
-  # Agrego columna con las predicciones
+  # Agrego columna con las predicciones de cada semilla
   col_name <- paste0("semilla_", semilla)
   predicciones[, (col_name) := prediccion] 
 }
