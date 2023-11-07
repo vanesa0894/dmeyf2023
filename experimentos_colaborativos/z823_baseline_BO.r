@@ -38,7 +38,7 @@ PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
 
 # los meses en los que vamos a entrenar
 #  mucha magia emerger de esta eleccion
-PARAM$input$testing <- c(202107)
+PARAM$input$testing <- c(202106)
 PARAM$input$validation <- c(202106)
 PARAM$input$training <- c(202012,202101,202102,202103,202104,202105)
 
