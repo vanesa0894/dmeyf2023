@@ -12,7 +12,7 @@ require("lightgbm")
 PARAM <- list()
 
 # Nombre del experimento
-PARAM$experimento <- "RS5250" #Random seeds
+PARAM$experimento <- "RS5250_2" #Random seeds
 
 # Path donde se aloja el dataset
 PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
@@ -28,11 +28,11 @@ PARAM$input$future <- c(202107)
 semillas <- as.integer(seq(15000, 80000, length.out = 100))
 
 # Parámetros fijos
-PARAM$finalmodel$num_iterations <- 672
-PARAM$finalmodel$learning_rate <- 0.0517170806476456
-PARAM$finalmodel$feature_fraction <- 0.758869723036321
-PARAM$finalmodel$min_data_in_leaf <- 10931
-PARAM$finalmodel$num_leaves <- 293
+PARAM$finalmodel$num_iterations <- 671
+PARAM$finalmodel$learning_rate <- 0.0672851506440121
+PARAM$finalmodel$feature_fraction <- 0.516413796732882
+PARAM$finalmodel$min_data_in_leaf <- 6169
+PARAM$finalmodel$num_leaves <- 418
 PARAM$finalmodel$max_bin <- 31
 
 #---------------------------------CARGAR DATOS---------------------------------------------#
