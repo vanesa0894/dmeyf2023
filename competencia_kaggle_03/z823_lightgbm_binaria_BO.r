@@ -32,7 +32,7 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento <- "OB_C3_02"
+PARAM$experimento <- "OB_C3_03"
 
 PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
 
@@ -323,6 +323,27 @@ dataset[, (columnas_monetarias) := NULL]
 
 # Feature Engineering Historico  ----------------------------------------------
 
+# Genero variables históricas de todas las variables originales
+columnas_seleccionadas <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
+
+# Genero 1,2,3 Lags
+for (i in 1:3){
+  dataset[, paste0("lag_", i, "_", columnas_seleccionadas) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
+          by = numero_de_cliente, .SDcols = columnas_seleccionadas]
+}
+
+# Genero 1 delta
+for (col_name in columnas_seleccionadas) {
+  delta_col_name <- paste0("delta_1_", col_name)
+  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
+}
+
+# Genero media móvil últimos 6 meses
+dataset <- dataset[order(numero_de_cliente, foto_mes)]
+dataset[, (paste0("avg6_", columnas_seleccionadas)) := lapply(.SD, function(x) {
+  ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
+  return(ma6)
+}), by = .(numero_de_cliente), .SDcols = columnas_seleccionadas]
 
 
 # ahora SI comienza la optimizacion Bayesiana
