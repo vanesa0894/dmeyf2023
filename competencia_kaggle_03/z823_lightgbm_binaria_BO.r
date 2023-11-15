@@ -291,30 +291,35 @@ klog <- paste0(PARAM$experimento, ".txt")
 
 
 # Catastrophe Analysis  -------------------------------------------------------
-# Corrección de variables rotas. 
-dataset[foto_mes %in% c(201905,201910), mrentabilidad := NA]
-dataset[foto_mes %in% c(201905,201910), mrentabilidad_annual := NA]
-
-dataset[foto_mes %in% c(201905,201910), mcomisiones := NA]
-dataset[foto_mes %in% c(201905,201910), mcomisiones_otras := NA]
-
-dataset[foto_mes %in% c(201905,201910), mactivos_margen := NA]
-dataset[foto_mes %in% c(201905,201910), mpasivos_margen := NA]
-
-dataset[foto_mes %in% c(201904), ctarjeta_visa_debitos_automaticos := NA]
-dataset[foto_mes %in% c(201904), mttarjeta_visa_debitos_automaticos := NA]
-
-dataset[foto_mes %in% c(201905,201910), ccomisiones_otras := NA]
-
-dataset[foto_mes %in% c(201901,201902,201903,201904,201905), ctransferencias_recibidas := NA]
-dataset[foto_mes %in% c(201901,201902,201903,201904,201905), mtransferencias_recibidas := NA]
-
-dataset[foto_mes %in% c(201910), chomebanking_transacciones := NA]
-
-dataset[foto_mes %in% c(201907,202106), Visa_fultimo_cierre  := NA]
 
 # Data Drifting
+# Drifting de variables monetarias
+columnas_monetarias = c("mrentabilidad","mrentabilidad_annual","mcomisiones","mactivos_margen","mpasivos_margen",
+                        "mcuenta_corriente_adicional","mcuenta_corriente","mcaja_ahorro","mcaja_ahorro_adicional",
+                        "mcaja_ahorro_dolares","mcuentas_saldo","mautoservicio","mtarjeta_visa_consumo",
+                        "mtarjeta_master_consumo","mprestamos_personales","mprestamos_prendarios",
+                        "mprestamos_hipotecarios","mplazo_fijo_dolares","mplazo_fijo_pesos","minversion1_pesos",
+                        "minversion1_dolares","minversion2","mpayroll","mpayroll2","mcuenta_debitos_automaticos",
+                        "mttarjeta_master_debitos_automaticos","mpagodeservicios","mpagomiscuentas",
+                        "mcajeros_propios_descuentos","mtarjeta_visa_descuentos","mtarjeta_master_descuentos",
+                        "mcomisiones_mantenimiento","mcomisiones_otras","mforex_buy","mforex_sell",
+                        "mtransferencias_recibidas","mtransferencias_emitidas","mextraccion_autoservicio",
+                        "mcheques_depositados","mcheques_emitidos","mcheques_depositados_rechazados",
+                        "mcheques_emitidos_rechazados","matm","matm_other","Master_mfinanciacion_limite",
+                        "Master_msaldototal","Master_msaldopesos","Master_msaldodolares","Master_mconsumospesos",
+                        "Master_mconsumosdolares","Master_mlimitecompra","Master_madelantopesos","Master_madelantodolares",
+                        "Master_mpagado","Master_mpagospesos","Master_mpagosdolares","Master_mconsumototal",
+                        "Master_mpagominimo","Visa_mfinanciacion_limite","Visa_msaldototal","Visa_msaldopesos",
+                        "Visa_msaldodolares","Visa_mconsumospesos","Visa_mconsumosdolares","Visa_mlimitecompra",
+                        "Visa_madelantopesos","Visa_madelantodolares","Visa_mpagado","Visa_mpagospesos","Visa_mpagosdolares",
+                        "Visa_mconsumototal","Visa_mpagominimo")
 
+
+# Calcular el ranking para todas las columnas dentro de ventanas temporales
+dataset[, (paste0(columnas_monetarias, "_rank")) := lapply(.SD, function(x) frankv(x, na.last = TRUE) / .N), by = foto_mes, .SDcols = columnas_monetarias]
+
+# Eliminar las columnas originales
+dataset[, (columnas_monetarias) := NULL]
 
 # Feature Engineering Historico  ----------------------------------------------
 
