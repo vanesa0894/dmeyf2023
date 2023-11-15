@@ -77,33 +77,6 @@ dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 # Catastrophe Analysis  -------------------------------------------------------
 
 # Data Drifting
-# Drifting de variables monetarias
-columnas_monetarias = c("mrentabilidad","mrentabilidad_annual","mcomisiones","mactivos_margen","mpasivos_margen",
-                        "mcuenta_corriente_adicional","mcuenta_corriente","mcaja_ahorro","mcaja_ahorro_adicional",
-                        "mcaja_ahorro_dolares","mcuentas_saldo","mautoservicio","mtarjeta_visa_consumo",
-                        "mtarjeta_master_consumo","mprestamos_personales","mprestamos_prendarios",
-                        "mprestamos_hipotecarios","mplazo_fijo_dolares","mplazo_fijo_pesos","minversion1_pesos",
-                        "minversion1_dolares","minversion2","mpayroll","mpayroll2","mcuenta_debitos_automaticos",
-                        "mttarjeta_master_debitos_automaticos","mpagodeservicios","mpagomiscuentas",
-                        "mcajeros_propios_descuentos","mtarjeta_visa_descuentos","mtarjeta_master_descuentos",
-                        "mcomisiones_mantenimiento","mcomisiones_otras","mforex_buy","mforex_sell",
-                        "mtransferencias_recibidas","mtransferencias_emitidas","mextraccion_autoservicio",
-                        "mcheques_depositados","mcheques_emitidos","mcheques_depositados_rechazados",
-                        "mcheques_emitidos_rechazados","matm","matm_other","Master_mfinanciacion_limite",
-                        "Master_msaldototal","Master_msaldopesos","Master_msaldodolares","Master_mconsumospesos",
-                        "Master_mconsumosdolares","Master_mlimitecompra","Master_madelantopesos","Master_madelantodolares",
-                        "Master_mpagado","Master_mpagospesos","Master_mpagosdolares","Master_mconsumototal",
-                        "Master_mpagominimo","Visa_mfinanciacion_limite","Visa_msaldototal","Visa_msaldopesos",
-                        "Visa_msaldodolares","Visa_mconsumospesos","Visa_mconsumosdolares","Visa_mlimitecompra",
-                        "Visa_madelantopesos","Visa_madelantodolares","Visa_mpagado","Visa_mpagospesos","Visa_mpagosdolares",
-                        "Visa_mconsumototal","Visa_mpagominimo")
-
-
-# Calcular el ranking para todas las columnas dentro de ventanas temporales
-dataset[, (paste0(columnas_monetarias, "_rank")) := lapply(.SD, function(x) frankv(x, na.last = TRUE) / .N), by = foto_mes, .SDcols = columnas_monetarias]
-
-# Eliminar las columnas originales
-dataset[, (columnas_monetarias) := NULL]
 
 # Feature Engineering Historico  ----------------------------------------------
 
