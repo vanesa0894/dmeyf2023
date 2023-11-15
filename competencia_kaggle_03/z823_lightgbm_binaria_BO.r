@@ -32,9 +32,9 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento <- "OB_C3_01"
+PARAM$experimento <- "OB_C3_02"
 
-PARAM$input$dataset <- "./datasets/competencia_03_dd.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
 
 # los meses en los que vamos a entrenar
 #  mucha magia emerger de esta eleccion
@@ -291,7 +291,27 @@ klog <- paste0(PARAM$experimento, ".txt")
 
 
 # Catastrophe Analysis  -------------------------------------------------------
+# Corrección de variables rotas. 
+dataset[foto_mes %in% c(201905,201910), mrentabilidad := NA]
+dataset[foto_mes %in% c(201905,201910), mrentabilidad_annual := NA]
 
+dataset[foto_mes %in% c(201905,201910), mcomisiones := NA]
+dataset[foto_mes %in% c(201905,201910), mcomisiones_otras := NA]
+
+dataset[foto_mes %in% c(201905,201910), mactivos_margen := NA]
+dataset[foto_mes %in% c(201905,201910), mpasivos_margen := NA]
+
+dataset[foto_mes %in% c(201904), ctarjeta_visa_debitos_automaticos := NA]
+dataset[foto_mes %in% c(201904), mttarjeta_visa_debitos_automaticos := NA]
+
+dataset[foto_mes %in% c(201905,201910), ccomisiones_otras := NA]
+
+dataset[foto_mes %in% c(201901,201902,201903,201904,201905), ctransferencias_recibidas := NA]
+dataset[foto_mes %in% c(201901,201902,201903,201904,201905), mtransferencias_recibidas := NA]
+
+dataset[foto_mes %in% c(201910), chomebanking_transacciones := NA]
+
+dataset[foto_mes %in% c(201907,202106), Visa_fultimo_cierre  := NA]
 
 # Data Drifting
 
