@@ -6,7 +6,7 @@ require("data.table")
 rm(list = ls()) # remove all objects
 gc() # garbage collection
 
-setwd("C:/Users/vanes/Documents/UBA/2do_cuatrimestre/DMEyF")
+setwd("~/buckets/b1/")
 
 # cargo el dataset 
 df <- fread("./datasets/competencia_03.csv.gz", stringsAsFactors = TRUE)
@@ -67,7 +67,7 @@ dataset[, (columnas_monetarias) := NULL]
 # Genero variables históricas de todas las variables originales
 columnas_seleccionadas <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
 
-# Genero 1,2,3 Lags
+# Genero 1,2,3,4,5,6 Lags
 for (i in 1:3){
   dataset[, paste0("lag_", i, "_", columnas_seleccionadas) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
           by = numero_de_cliente, .SDcols = columnas_seleccionadas]
@@ -86,4 +86,4 @@ dataset[, (paste0("avg6_", columnas_seleccionadas)) := lapply(.SD, function(x) {
   return(ma6)
 }), by = .(numero_de_cliente), .SDcols = columnas_seleccionadas]
 
-fwrite(dataset, file = "./datasets/competencia_03_fe_test.csv.gz", sep = ",")
+fwrite(dataset, file = "./datasets/competencia_03_preprocesado.csv.gz", sep = ",")
