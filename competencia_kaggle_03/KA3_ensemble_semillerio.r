@@ -12,7 +12,7 @@ require("lightgbm")
 PARAM <- list()
 
 # Nombre del experimento
-PARAM$experimento <- "KA_SEM_01" 
+PARAM$experimento <- "KA_SEM_02" 
 
 # Path donde se aloja el dataset (puede cargar su dataset preprocesado o puede hacerlo en el apartado de preprocesamiento de abajo)
 PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
@@ -30,11 +30,11 @@ cantidad_semillas = 100 # Cuántas semillas desea ensamblar?
 semillas <- as.integer(seq(15000, 80000, length.out = cantidad_semillas))
 
 # Parámetros fijos obtenidos en la Optimización Bayesiana 
-PARAM$finalmodel$num_iterations <- 364
-PARAM$finalmodel$learning_rate <- 0.118712124637801
-PARAM$finalmodel$feature_fraction <- 0.843917372635813
-PARAM$finalmodel$min_data_in_leaf <- 12220
-PARAM$finalmodel$num_leaves <- 512
+PARAM$finalmodel$num_iterations <- 35
+PARAM$finalmodel$learning_rate <- 0.0989972746309919
+PARAM$finalmodel$feature_fraction <- 0.663615414694706
+PARAM$finalmodel$min_data_in_leaf <- 19026
+PARAM$finalmodel$num_leaves <- 262
 PARAM$finalmodel$max_bin <- 31
 
 #----------------------------------------------CARGAR DATOS---------------------------------------------#
@@ -49,7 +49,30 @@ dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 # Catastrophe Analysis  
 
 # Data Drifting
-
+# Drifting de variables monetarias
+columnas_monetarias = c("mrentabilidad","mrentabilidad_annual","mcomisiones","mactivos_margen","mpasivos_margen",
+                        "mcuenta_corriente_adicional","mcuenta_corriente","mcaja_ahorro","mcaja_ahorro_adicional",
+                        "mcaja_ahorro_dolares","mcuentas_saldo","mautoservicio","mtarjeta_visa_consumo",
+                        "mtarjeta_master_consumo","mprestamos_personales","mprestamos_prendarios",
+                        "mprestamos_hipotecarios","mplazo_fijo_dolares","mplazo_fijo_pesos","minversion1_pesos",
+                        "minversion1_dolares","minversion2","mpayroll","mpayroll2","mcuenta_debitos_automaticos",
+                        "mttarjeta_master_debitos_automaticos","mpagodeservicios","mpagomiscuentas",
+                        "mcajeros_propios_descuentos","mtarjeta_visa_descuentos","mtarjeta_master_descuentos",
+                        "mcomisiones_mantenimiento","mcomisiones_otras","mforex_buy","mforex_sell",
+                        "mtransferencias_recibidas","mtransferencias_emitidas","mextraccion_autoservicio",
+                        "mcheques_depositados","mcheques_emitidos","mcheques_depositados_rechazados",
+                        "mcheques_emitidos_rechazados","matm","matm_other","Master_mfinanciacion_limite",
+                        "Master_msaldototal","Master_msaldopesos","Master_msaldodolares","Master_mconsumospesos",
+                        "Master_mconsumosdolares","Master_mlimitecompra","Master_madelantopesos","Master_madelantodolares",
+                        "Master_mpagado","Master_mpagospesos","Master_mpagosdolares","Master_mconsumototal",
+                        "Master_mpagominimo","Visa_mfinanciacion_limite","Visa_msaldototal","Visa_msaldopesos",
+                        "Visa_msaldodolares","Visa_mconsumospesos","Visa_mconsumosdolares","Visa_mlimitecompra",
+                        "Visa_madelantopesos","Visa_madelantodolares","Visa_mpagado","Visa_mpagospesos","Visa_mpagosdolares",
+                        "Visa_mconsumototal","Visa_mpagominimo")
+# Calcular el ranking para todas las columnas dentro de ventanas temporales
+dataset[, (paste0(columnas_monetarias, "_rank")) := lapply(.SD, function(x) frankv(x, na.last = TRUE) / .N), by = foto_mes, .SDcols = columnas_monetarias]
+# Eliminar las columnas originales
+dataset[, (columnas_monetarias) := NULL]
 # Feature Engineering Historico  
 
 
