@@ -14,7 +14,7 @@ require("lightgbm")
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "KA_C3_04"
+PARAM$experimento <- "KA_C3_05"
 
 PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
 
@@ -25,11 +25,11 @@ PARAM$input$future <- c(202109) # meses donde se aplica el modelo
 PARAM$finalmodel$semilla <- 880031
 
 # hiperparametros intencionalmente NO optimos
-PARAM$finalmodel$optim$num_iterations <- 27
-PARAM$finalmodel$optim$learning_rate <- 0.0964925855396246
-PARAM$finalmodel$optim$feature_fraction <- 0.7558815219901
-PARAM$finalmodel$optim$min_data_in_leaf <- 18166
-PARAM$finalmodel$optim$num_leaves <- 133
+PARAM$finalmodel$optim$num_iterations <- 35
+PARAM$finalmodel$optim$learning_rate <- 0.0989972746309919
+PARAM$finalmodel$optim$feature_fraction <- 0.663615414694706
+PARAM$finalmodel$optim$min_data_in_leaf <- 19026
+PARAM$finalmodel$optim$num_leaves <- 262
 
 # Hiperparametros FIJOS de  lightgbm
 PARAM$finalmodel$lgb_basicos <- list(
