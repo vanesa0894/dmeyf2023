@@ -14,7 +14,7 @@ require("lightgbm")
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "KA_C3_06"
+PARAM$experimento <- "KA_C3_07"
 
 PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
 
@@ -25,11 +25,11 @@ PARAM$input$future <- c(202109) # meses donde se aplica el modelo
 PARAM$finalmodel$semilla <- 880031
 
 # hiperparametros intencionalmente NO optimos
-PARAM$finalmodel$optim$num_iterations <- 27
-PARAM$finalmodel$optim$learning_rate <- 0.0584818038718245
-PARAM$finalmodel$optim$feature_fraction <- 0.399007757136944
-PARAM$finalmodel$optim$min_data_in_leaf <- 6999
-PARAM$finalmodel$optim$num_leaves <- 16
+PARAM$finalmodel$optim$num_iterations <- 749
+PARAM$finalmodel$optim$learning_rate <- 0.0307769294850523
+PARAM$finalmodel$optim$feature_fraction <- 0.982597203580309
+PARAM$finalmodel$optim$min_data_in_leaf <- 9211
+PARAM$finalmodel$optim$num_leaves <- 944
 
 # Hiperparametros FIJOS de  lightgbm
 PARAM$finalmodel$lgb_basicos <- list(
@@ -75,7 +75,6 @@ dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 
 # Catastrophe Analysis  -------------------------------------------------------
 
-# Data Drifting
 # Drifting de variables monetarias
 columnas_monetarias = c("mrentabilidad","mrentabilidad_annual","mcomisiones","mactivos_margen","mpasivos_margen",
                         "mcuenta_corriente_adicional","mcuenta_corriente","mcaja_ahorro","mcaja_ahorro_adicional",
@@ -105,6 +104,28 @@ dataset[, (paste0(columnas_monetarias, "_rank")) := lapply(.SD, function(x) fran
 dataset[, (columnas_monetarias) := NULL]
 
 # Feature Engineering Historico  ----------------------------------------------
+
+# Genero variables históricas de todas las variables originales
+columnas_seleccionadas <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
+
+# Genero 1,2,3 Lags
+for (i in 1:3){
+  dataset[, paste0("lag_", i, "_", columnas_seleccionadas) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
+          by = numero_de_cliente, .SDcols = columnas_seleccionadas]
+}
+
+# Genero 1 delta
+for (col_name in columnas_seleccionadas) {
+  delta_col_name <- paste0("delta_1_", col_name)
+  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
+}
+
+# Genero media móvil últimos 6 meses
+dataset <- dataset[order(numero_de_cliente, foto_mes)]
+dataset[, (paste0("avg6_", columnas_seleccionadas)) := lapply(.SD, function(x) {
+  ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
+  return(ma6)
+}), by = .(numero_de_cliente), .SDcols = columnas_seleccionadas]
 
 # paso la clase a binaria que tome valores {0,1}  enteros
 # set trabaja con la clase  POS = { BAJA+1, BAJA+2 }
