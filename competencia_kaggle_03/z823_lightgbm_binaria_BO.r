@@ -32,7 +32,7 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento <- "OB_C3_04"
+PARAM$experimento <- "OB_C3_05"
 
 PARAM$input$dataset <- "./datasets/competencia_03_preprocesado.csv.gz"
 
@@ -40,8 +40,8 @@ PARAM$input$dataset <- "./datasets/competencia_03_preprocesado.csv.gz"
 #  mucha magia emerger de esta eleccion
 PARAM$input$testing <- c(202107)
 PARAM$input$validation <- c(202106)
-PARAM$input$training <- c(201901,201902,201903,201904,201905,201906,201907,201908,201909,201910,201911,201912,202001,202002,202010,202011,202012,202101,202102,202103,202104,202105)
-
+PARAM$input$training <- c(202010,202011,202012,202101,202102,202103,202104,202105)
+# 201901,201902,201903,201904,201905,201906,201907,201908,201909,201910,201911,201912,202001,202002,
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
 PARAM$trainingstrategy$undersampling <- 1.0
 PARAM$trainingstrategy$semilla_azar <- 880027 
@@ -64,7 +64,7 @@ PARAM$lgb_basicos <- list(
   feature_pre_filter = FALSE,
   force_row_wise = TRUE, # para reducir warnings
   verbosity = -100,
-  max_depth = -1L, # -1 significa no limitar,  por ahora lo dejo fijo
+  #max_depth = -1L, # -1 significa no limitar,  por ahora lo dejo fijo
   min_gain_to_split = 0.0, # min_gain_to_split >= 0.0
   min_sum_hessian_in_leaf = 0.001, #  min_sum_hessian_in_leaf >= 0.0
   lambda_l1 = 0.0, # lambda_l1 >= 0.0
@@ -94,7 +94,9 @@ PARAM$bo_lgb <- makeParamSet(
   makeNumericParam("learning_rate", lower = 0.02, upper = 0.3),
   makeNumericParam("feature_fraction", lower = 0.2, upper = 1.0),
   makeIntegerParam("num_leaves", lower = 16L, upper = 1024L),
-  makeIntegerParam("min_data_in_leaf", lower = 100L, upper = 20000L)
+  makeIntegerParam("min_data_in_leaf", lower = 100L, upper = 20000L),
+  makeNumericParam("feature_fraction_bynode", lower = 0.01, upper = 1.0),
+  makeIntegerParam("max_depth", lower = 2L, upper = 50L)
 )
 
 # si usted es ambicioso, y tiene paciencia, podria subir este valor a 100
