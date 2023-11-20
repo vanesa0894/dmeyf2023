@@ -12,7 +12,7 @@ require("lightgbm")
 PARAM <- list()
 
 # Nombre del experimento
-PARAM$experimento <- "KA_SEM_02" 
+PARAM$experimento <- "KA_SEM_03" 
 
 # Path donde se aloja el dataset (puede cargar su dataset preprocesado o puede hacerlo en el apartado de preprocesamiento de abajo)
 PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
@@ -30,11 +30,11 @@ cantidad_semillas = 100 # Cuántas semillas desea ensamblar?
 semillas <- as.integer(seq(15000, 80000, length.out = cantidad_semillas))
 
 # Parámetros fijos obtenidos en la Optimización Bayesiana 
-PARAM$finalmodel$num_iterations <- 35
-PARAM$finalmodel$learning_rate <- 0.0989972746309919
-PARAM$finalmodel$feature_fraction <- 0.663615414694706
-PARAM$finalmodel$min_data_in_leaf <- 19026
-PARAM$finalmodel$num_leaves <- 262
+PARAM$finalmodel$num_iterations <- 749
+PARAM$finalmodel$learning_rate <- 0.0307769294850523
+PARAM$finalmodel$feature_fraction <- 0.982597203580309
+PARAM$finalmodel$min_data_in_leaf <- 9211
+PARAM$finalmodel$num_leaves <- 944
 PARAM$finalmodel$max_bin <- 31
 
 #----------------------------------------------CARGAR DATOS---------------------------------------------#
@@ -74,7 +74,27 @@ dataset[, (paste0(columnas_monetarias, "_rank")) := lapply(.SD, function(x) fran
 # Eliminar las columnas originales
 dataset[, (columnas_monetarias) := NULL]
 # Feature Engineering Historico  
+# Genero variables históricas de todas las variables originales
+columnas_seleccionadas <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
 
+# Genero 1,2,3 Lags
+for (i in 1:3){
+  dataset[, paste0("lag_", i, "_", columnas_seleccionadas) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
+          by = numero_de_cliente, .SDcols = columnas_seleccionadas]
+}
+
+# Genero 1 delta
+for (col_name in columnas_seleccionadas) {
+  delta_col_name <- paste0("delta_1_", col_name)
+  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
+}
+
+# Genero media móvil últimos 6 meses
+dataset <- dataset[order(numero_de_cliente, foto_mes)]
+dataset[, (paste0("avg6_", columnas_seleccionadas)) := lapply(.SD, function(x) {
+  ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
+  return(ma6)
+}), by = .(numero_de_cliente), .SDcols = columnas_seleccionadas]
 
 # Configuro la variable target como binaria
 # El criterio: POS = { BAJA+1, BAJA+2 }, NEG {CONTINUA}
