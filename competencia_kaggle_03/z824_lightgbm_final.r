@@ -14,22 +14,25 @@ require("lightgbm")
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "KA_C3_09"
+PARAM$experimento <- "KA_C3_13"
 
-PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_03_preprocesado.csv.gz"
 
 # meses donde se entrena el modelo
-PARAM$input$training <- c(202010,202011,202012,202101,202102,202103,202104,202105,202106,202107)
+PARAM$input$training <- c(202012,202101,202102,202103,202104,202105,202106,202107)
 PARAM$input$future <- c(202109) # meses donde se aplica el modelo
 
 PARAM$finalmodel$semilla <- 880031
 
 # hiperparametros intencionalmente NO optimos
-PARAM$finalmodel$optim$num_iterations <- 548
-PARAM$finalmodel$optim$learning_rate <- 0.0306235455404911
-PARAM$finalmodel$optim$feature_fraction <- 0.998241984364687
-PARAM$finalmodel$optim$min_data_in_leaf <- 6742
-PARAM$finalmodel$optim$num_leaves <- 945
+PARAM$finalmodel$optim$num_iterations <- 474
+PARAM$finalmodel$optim$learning_rate <- 0.103640846279062
+PARAM$finalmodel$optim$feature_fraction <- 0.287048532976769
+PARAM$finalmodel$optim$min_data_in_leaf <- 11779
+PARAM$finalmodel$optim$num_leaves <- 949
+PARAM$finalmodel$optim$max_depth <- 27
+PARAM$finalmodel$optim$feature_fraction_bynode <- 0.355600890411006
+
 
 # Hiperparametros FIJOS de  lightgbm
 PARAM$finalmodel$lgb_basicos <- list(
@@ -41,7 +44,7 @@ PARAM$finalmodel$lgb_basicos <- list(
   feature_pre_filter = FALSE,
   force_row_wise = TRUE, # para reducir warnings
   verbosity = -100,
-  max_depth = -1L, # -1 significa no limitar,  por ahora lo dejo fijo
+  #max_depth = -1L, # -1 significa no limitar,  por ahora lo dejo fijo
   min_gain_to_split = 0.0, # min_gain_to_split >= 0.0
   min_sum_hessian_in_leaf = 0.001, #  min_sum_hessian_in_leaf >= 0.0
   lambda_l1 = 0.0, # lambda_l1 >= 0.0
