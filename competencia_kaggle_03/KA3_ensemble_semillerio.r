@@ -12,13 +12,13 @@ require("lightgbm")
 PARAM <- list()
 
 # Nombre del experimento
-PARAM$experimento <- "KA_SEM_03" 
+PARAM$experimento <- "KA_SEM_04" 
 
 # Path donde se aloja el dataset (puede cargar su dataset preprocesado o puede hacerlo en el apartado de preprocesamiento de abajo)
-PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_03_preprocesado.csv.gz"
 
 # Meses donde se entrena el modelo
-PARAM$input$training <- c(202010, 202011, 202012, 202101, 202102, 202103, 202104, 202105, 202106, 202107)
+PARAM$input$training <- c(201903,201904,201905,201906,201907,201908,201909,201910,201911,201912,202001,202002,202010,202011,202012,202101,202102,202103,202104,202105,202106,202107)
 
 # Mes donde aplico el modelo
 PARAM$input$future <- c(202109)
@@ -30,11 +30,11 @@ cantidad_semillas = 100 # Cuántas semillas desea ensamblar?
 semillas <- as.integer(seq(15000, 80000, length.out = cantidad_semillas))
 
 # Parámetros fijos obtenidos en la Optimización Bayesiana 
-PARAM$finalmodel$num_iterations <- 749
-PARAM$finalmodel$learning_rate <- 0.0307769294850523
-PARAM$finalmodel$feature_fraction <- 0.982597203580309
-PARAM$finalmodel$min_data_in_leaf <- 9211
-PARAM$finalmodel$num_leaves <- 944
+PARAM$finalmodel$num_iterations <- 298
+PARAM$finalmodel$learning_rate <- 0.0290857939192944
+PARAM$finalmodel$feature_fraction <- 0.478747566265122
+PARAM$finalmodel$min_data_in_leaf <- 4956
+PARAM$finalmodel$num_leaves <- 87
 PARAM$finalmodel$max_bin <- 31
 
 #----------------------------------------------CARGAR DATOS---------------------------------------------#
@@ -49,52 +49,10 @@ dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 # Catastrophe Analysis  
 
 # Data Drifting
+
 # Drifting de variables monetarias
-columnas_monetarias = c("mrentabilidad","mrentabilidad_annual","mcomisiones","mactivos_margen","mpasivos_margen",
-                        "mcuenta_corriente_adicional","mcuenta_corriente","mcaja_ahorro","mcaja_ahorro_adicional",
-                        "mcaja_ahorro_dolares","mcuentas_saldo","mautoservicio","mtarjeta_visa_consumo",
-                        "mtarjeta_master_consumo","mprestamos_personales","mprestamos_prendarios",
-                        "mprestamos_hipotecarios","mplazo_fijo_dolares","mplazo_fijo_pesos","minversion1_pesos",
-                        "minversion1_dolares","minversion2","mpayroll","mpayroll2","mcuenta_debitos_automaticos",
-                        "mttarjeta_master_debitos_automaticos","mpagodeservicios","mpagomiscuentas",
-                        "mcajeros_propios_descuentos","mtarjeta_visa_descuentos","mtarjeta_master_descuentos",
-                        "mcomisiones_mantenimiento","mcomisiones_otras","mforex_buy","mforex_sell",
-                        "mtransferencias_recibidas","mtransferencias_emitidas","mextraccion_autoservicio",
-                        "mcheques_depositados","mcheques_emitidos","mcheques_depositados_rechazados",
-                        "mcheques_emitidos_rechazados","matm","matm_other","Master_mfinanciacion_limite",
-                        "Master_msaldototal","Master_msaldopesos","Master_msaldodolares","Master_mconsumospesos",
-                        "Master_mconsumosdolares","Master_mlimitecompra","Master_madelantopesos","Master_madelantodolares",
-                        "Master_mpagado","Master_mpagospesos","Master_mpagosdolares","Master_mconsumototal",
-                        "Master_mpagominimo","Visa_mfinanciacion_limite","Visa_msaldototal","Visa_msaldopesos",
-                        "Visa_msaldodolares","Visa_mconsumospesos","Visa_mconsumosdolares","Visa_mlimitecompra",
-                        "Visa_madelantopesos","Visa_madelantodolares","Visa_mpagado","Visa_mpagospesos","Visa_mpagosdolares",
-                        "Visa_mconsumototal","Visa_mpagominimo")
-# Calcular el ranking para todas las columnas dentro de ventanas temporales
-dataset[, (paste0(columnas_monetarias, "_rank")) := lapply(.SD, function(x) frankv(x, na.last = TRUE) / .N), by = foto_mes, .SDcols = columnas_monetarias]
-# Eliminar las columnas originales
-dataset[, (columnas_monetarias) := NULL]
+
 # Feature Engineering Historico  
-# Genero variables históricas de todas las variables originales
-columnas_seleccionadas <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
-
-# Genero 1,2,3 Lags
-for (i in 1:3){
-  dataset[, paste0("lag_", i, "_", columnas_seleccionadas) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
-          by = numero_de_cliente, .SDcols = columnas_seleccionadas]
-}
-
-# Genero 1 delta
-for (col_name in columnas_seleccionadas) {
-  delta_col_name <- paste0("delta_1_", col_name)
-  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
-}
-
-# Genero media móvil últimos 6 meses
-dataset <- dataset[order(numero_de_cliente, foto_mes)]
-dataset[, (paste0("avg6_", columnas_seleccionadas)) := lapply(.SD, function(x) {
-  ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
-  return(ma6)
-}), by = .(numero_de_cliente), .SDcols = columnas_seleccionadas]
 
 # Configuro la variable target como binaria
 # El criterio: POS = { BAJA+1, BAJA+2 }, NEG {CONTINUA}
