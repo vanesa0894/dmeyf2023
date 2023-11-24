@@ -32,15 +32,15 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento <- "OB_C3_06"
+PARAM$experimento <- "OB_C3_07"
 
-PARAM$input$dataset <- "./datasets/competencia_03_preprocesado.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
 
 # los meses en los que vamos a entrenar
 #  mucha magia emerger de esta eleccion
 PARAM$input$testing <- c(202107)
 PARAM$input$validation <- c(202106)
-PARAM$input$training <- c(201909, 201910, 201911, 201912, 202001, 202002, 
+PARAM$input$training <- c(201906,201907,201908,201909, 201910, 201911, 201912, 202001, 202002, 
                           202009, 202010, 202011, 202012, 202101, 202102, 202103,
                           202104,202105)
 
@@ -294,11 +294,52 @@ klog <- paste0(PARAM$experimento, ".txt")
 
 
 # Catastrophe Analysis  -------------------------------------------------------
+# Corrección de variables rotas. 
+dataset[foto_mes %in% c(201905,201910), mrentabilidad := NA]
+dataset[foto_mes %in% c(201905,201910), mrentabilidad_annual := NA]
+
+dataset[foto_mes %in% c(201905,201910), mcomisiones := NA]
+dataset[foto_mes %in% c(201905,201910), mcomisiones_otras := NA]
+
+dataset[foto_mes %in% c(201905,201910), mactivos_margen := NA]
+dataset[foto_mes %in% c(201905,201910), mpasivos_margen := NA]
+
+dataset[foto_mes %in% c(201904), ctarjeta_visa_debitos_automaticos := NA]
+dataset[foto_mes %in% c(201904), mttarjeta_visa_debitos_automaticos := NA]
+
+dataset[foto_mes %in% c(201905,201910), ccomisiones_otras := NA]
+
+dataset[foto_mes %in% c(201901,201902,201903,201904,201905), ctransferencias_recibidas := NA]
+dataset[foto_mes %in% c(201901,201902,201903,201904,201905), mtransferencias_recibidas := NA]
+
+dataset[foto_mes %in% c(201910), chomebanking_transacciones := NA]
+
+dataset[foto_mes %in% c(201907,202106), Visa_fultimo_cierre  := NA]
 
 # Data Drifting
 
 # Feature Engineering Historico  ----------------------------------------------
+# Genero variables históricas de todas las variables originales
+columnas_seleccionadas <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
 
+# Genero 1,2,3,4,5,6 Lags
+for (i in 1:3){
+  dataset[, paste0("lag_", i, "_", columnas_seleccionadas) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
+          by = numero_de_cliente, .SDcols = columnas_seleccionadas]
+}
+
+# Genero 1 delta
+for (col_name in columnas_seleccionadas) {
+  delta_col_name <- paste0("delta_1_", col_name)
+  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
+}
+
+# Genero media móvil últimos 6 meses
+dataset <- dataset[order(numero_de_cliente, foto_mes)]
+dataset[, (paste0("avg6_", columnas_seleccionadas)) := lapply(.SD, function(x) {
+  ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
+  return(ma6)
+}), by = .(numero_de_cliente), .SDcols = columnas_seleccionadas]
 
 
 # ahora SI comienza la optimizacion Bayesiana
