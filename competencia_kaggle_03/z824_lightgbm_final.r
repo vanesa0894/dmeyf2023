@@ -16,7 +16,7 @@ require("lightgbm")
 PARAM <- list()
 PARAM$experimento <- "KA_C3_19"
 
-PARAM$input$dataset <- "./datasets/competencia_03_preprocesado.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
 
 # meses donde se entrena el modelo
 PARAM$input$training <- c(201908,201909, 201910, 201911, 201912, 202001, 202002, 202009, 202010, 202011, 202012, 202101, 202102, 202103,202104,202105,202106,202107)
@@ -75,12 +75,52 @@ dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 
 
 # Catastrophe Analysis  -------------------------------------------------------
+# Corrección de variables rotas. 
+dataset[foto_mes %in% c(201905,201910), mrentabilidad := NA]
+dataset[foto_mes %in% c(201905,201910), mrentabilidad_annual := NA]
 
-# Drifting de variables monetarias
+dataset[foto_mes %in% c(201905,201910), mcomisiones := NA]
+dataset[foto_mes %in% c(201905,201910), mcomisiones_otras := NA]
+
+dataset[foto_mes %in% c(201905,201910), mactivos_margen := NA]
+dataset[foto_mes %in% c(201905,201910), mpasivos_margen := NA]
+
+dataset[foto_mes %in% c(201904), ctarjeta_visa_debitos_automaticos := NA]
+dataset[foto_mes %in% c(201904), mttarjeta_visa_debitos_automaticos := NA]
+
+dataset[foto_mes %in% c(201905,201910), ccomisiones_otras := NA]
+
+dataset[foto_mes %in% c(201901,201902,201903,201904,201905), ctransferencias_recibidas := NA]
+dataset[foto_mes %in% c(201901,201902,201903,201904,201905), mtransferencias_recibidas := NA]
+
+dataset[foto_mes %in% c(201910), chomebanking_transacciones := NA]
+
+dataset[foto_mes %in% c(201907,202106), Visa_fultimo_cierre  := NA]
+
+# Data Drifting
 
 # Feature Engineering Historico  ----------------------------------------------
+# Genero variables históricas de todas las variables originales
+columnas_seleccionadas <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
 
+# Genero 1,2,3,4,5,6 Lags
+for (i in 1:3){
+  dataset[, paste0("lag_", i, "_", columnas_seleccionadas) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
+          by = numero_de_cliente, .SDcols = columnas_seleccionadas]
+}
 
+# Genero 1 delta
+for (col_name in columnas_seleccionadas) {
+  delta_col_name <- paste0("delta_1_", col_name)
+  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
+}
+
+# Genero media móvil últimos 6 meses
+dataset <- dataset[order(numero_de_cliente, foto_mes)]
+dataset[, (paste0("avg6_", columnas_seleccionadas)) := lapply(.SD, function(x) {
+  ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
+  return(ma6)
+}), by = .(numero_de_cliente), .SDcols = columnas_seleccionadas]
 
 # paso la clase a binaria que tome valores {0,1}  enteros
 # set trabaja con la clase  POS = { BAJA+1, BAJA+2 }
