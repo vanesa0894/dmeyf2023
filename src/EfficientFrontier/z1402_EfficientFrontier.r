@@ -509,7 +509,7 @@ ksemillas  <- sample(primos)[ 1:PARAM$semillerio ]   #me quedo con PARAM$semille
 
 # cargo el dataset donde voy a entrenar
 # esta en la carpeta del exp_input y siempre se llama  dataset_training.csv.gz
-dataset_input  <- paste0( "./", PARAM$exp_directory, "/", PARAM$exp_input, "/dataset_training.csv.gz" )
+dataset_input  <- paste0( "./", PARAM$exp_directory, "/", PARAM$exp_input, "/competencia_03_fe.csv.gz" )
 dataset  <- fread( dataset_input )
 
 
