@@ -12,14 +12,13 @@ require("lightgbm")
 PARAM <- list()
 
 # Nombre del experimento
-PARAM$experimento <- "KA_SEM_04" 
+PARAM$experimento <- "KA_SEM_05" 
 
 # Path donde se aloja el dataset (puede cargar su dataset preprocesado o puede hacerlo en el apartado de preprocesamiento de abajo)
 PARAM$input$dataset <- "./datasets/competencia_03_preprocesado.csv.gz"
 
 # Meses donde se entrena el modelo
-PARAM$input$training <- c(201903,201904,201905,201906,201907,201908,201909,201910,201911,201912,202001,202002,202010,202011,202012,202101,202102,202103,202104,202105,202106,202107)
-
+PARAM$input$training <- c(201908,201909, 201910, 201911, 201912, 202001, 202002,202009, 202010, 202011, 202012, 202101, 202102, 202103,202104,202105,202106,202107)
 # Mes donde aplico el modelo
 PARAM$input$future <- c(202109)
 
@@ -30,11 +29,11 @@ cantidad_semillas = 100 # Cuántas semillas desea ensamblar?
 semillas <- as.integer(seq(15000, 80000, length.out = cantidad_semillas))
 
 # Parámetros fijos obtenidos en la Optimización Bayesiana 
-PARAM$finalmodel$num_iterations <- 298
-PARAM$finalmodel$learning_rate <- 0.0290857939192944
-PARAM$finalmodel$feature_fraction <- 0.478747566265122
-PARAM$finalmodel$min_data_in_leaf <- 4956
-PARAM$finalmodel$num_leaves <- 87
+PARAM$finalmodel$num_iterations <- 350
+PARAM$finalmodel$learning_rate <- 0.0772105449880473
+PARAM$finalmodel$feature_fraction <- 0.927805350220297
+PARAM$finalmodel$min_data_in_leaf <- 14020
+PARAM$finalmodel$num_leaves <- 982
 PARAM$finalmodel$max_bin <- 31
 
 #----------------------------------------------CARGAR DATOS---------------------------------------------#
