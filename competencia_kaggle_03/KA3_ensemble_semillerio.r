@@ -18,7 +18,7 @@ PARAM$experimento <- "KA_SEM_05"
 PARAM$input$dataset <- "./datasets/competencia_03_preprocesado.csv.gz"
 
 # Meses donde se entrena el modelo
-PARAM$input$training <- c(201908,201909, 201910, 201911, 201912, 202001, 202002,202009, 202010, 202011, 202012, 202101, 202102, 202103,202104,202105,202106,202107)
+PARAM$input$training <- c(201912,202001,202002,202009,202010,202011,202012,202101,202102,202103,202104,202105,202106,202107)
 # Mes donde aplico el modelo
 PARAM$input$future <- c(202109)
 
