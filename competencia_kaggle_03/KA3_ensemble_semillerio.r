@@ -12,10 +12,10 @@ require("lightgbm")
 PARAM <- list()
 
 # Nombre del experimento
-PARAM$experimento <- "KA_SEM_06" 
+PARAM$experimento <- "KA_SEM_07" 
 
 # Path donde se aloja el dataset (puede cargar su dataset preprocesado o puede hacerlo en el apartado de preprocesamiento de abajo)
-PARAM$input$dataset <- "./datasets/competencia_03.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_03_fe.csv.gz"
 
 # Meses donde se entrena el modelo
 PARAM$input$training <- c(201908,201909, 201910, 201911, 201912, 202001, 202002, 202009, 202010, 202011, 202012, 202101, 202102, 202103,202104,202105,202106,202107)
@@ -30,11 +30,11 @@ semillas <- as.integer(seq(15000, 80000, length.out = cantidad_semillas))
 
 
 # Parámetros fijos obtenidos en la Optimización Bayesiana 
-PARAM$finalmodel$num_iterations <- 211
-PARAM$finalmodel$learning_rate <- 0.0690884705739473
-PARAM$finalmodel$feature_fraction <- 0.508824792898529
-PARAM$finalmodel$min_data_in_leaf <- 16278
-PARAM$finalmodel$num_leaves <- 65
+PARAM$finalmodel$num_iterations <- 668
+PARAM$finalmodel$learning_rate <- 0.0333148085059427
+PARAM$finalmodel$feature_fraction <- 0.485718663370151
+PARAM$finalmodel$min_data_in_leaf <- 10645
+PARAM$finalmodel$num_leaves <- 209
 PARAM$finalmodel$max_bin <- 31
 
 #----------------------------------------------CARGAR DATOS---------------------------------------------#
@@ -64,26 +64,6 @@ dataset[foto_mes %in% c(201907,202106), Visa_fultimo_cierre  := NA]
 
 # Data Drifting
 # Feature Engineering Historico  ----------------------------------------------
-
-# Genero variables históricas de todas las variables originales
-columnas_seleccionadas <- setdiff(colnames(dataset), c("numero_de_cliente","foto_mes","clase_ternaria"))
-# Genero 1,2,3,4,5,6 Lags
-for (i in 1:3){
-  dataset[, paste0("lag_", i, "_", columnas_seleccionadas) := lapply(.SD, function(x) shift(x, type = "lag", n = i)), 
-          by = numero_de_cliente, .SDcols = columnas_seleccionadas]
-}
-# Genero 1 delta
-for (col_name in columnas_seleccionadas) {
-  delta_col_name <- paste0("delta_1_", col_name)
-  dataset[, (delta_col_name) := .SD[[col_name]] - .SD[[paste0("lag_1_", col_name)]], .SDcols = c(col_name, paste0("lag_1_", col_name))]
-}
-# Genero media móvil últimos 6 meses
-dataset <- dataset[order(numero_de_cliente, foto_mes)]
-dataset[, (paste0("avg6_", columnas_seleccionadas)) := lapply(.SD, function(x) {
-  ma6 <- frollmean(x, n = 6, fill = NA, align = "right")
-  return(ma6)
-}), by = .(numero_de_cliente), .SDcols = columnas_seleccionadas]
-
 
 # Configuro la variable target como binaria
 # El criterio: POS = { BAJA+1, BAJA+2 }, NEG {CONTINUA}
